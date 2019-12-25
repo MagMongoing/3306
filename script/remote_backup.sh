@@ -16,6 +16,7 @@ BACKUPDIR=/data/backup # Backups base directory
 TMPFILE="$BACKUPDIR/innobackupex-runner.$$.tmp"
 
 REMOTE_BACKUPHOST=backup  # Remote backup host
+REMOTE_BACKUPHOST_IP=`grep 'backup$' /etc/hosts|awk '{print $1}'`
 SSH_OPTION="ssh root@$REMOTE_BACKUPHOST"
 USER_HOST="root@$REMOTE_BACKUPHOST"
 HOST_IP_SUFFIX=`ifconfig|grep eth -A 1|grep inet |awk -F '.' '{print $4}' |awk -F ' ' '{print $1}'`
@@ -79,7 +80,7 @@ fi
 #############################################################################
 insert_backup_status()
 {
-    $MYSQL $STATOPTION archery -e 'insert into backup_stat(task_host,task,job_name,backup_name,remote_backup_dir,is_incr,is_sucess,started_at) values("'"$1"'","'"$2"'","'"$3"'","'"$4"'","'"$5"'","'"$6"'","'"$7"'","'"$8"'")'
+    $MYSQL $STATOPTION archery -e 'insert into backup_stat(task_host,task,job_name,backup_name,remote_backup_dir,is_incr,is_sucess,started_at,storage_host) values("'"$1"'","'"$2"'","'"$3"'","'"$4"'","'"$5"'","'"$6"'","'"$7"'","'"$8"'","'"$9"'")'
 }
 
 
@@ -114,11 +115,11 @@ if [ "$LATEST_FULL" -a `expr $LATEST_FULL_CREATED_AT + $FULLBACKUPLIFE ` -ge $ST
 
   if [ -z "`tail -1 $TMPFILE | grep 'completed OK!'`" ] ; then
     echo "$INNOBACKUPEX failed:"; echo
-    insert_backup_status $FULL_HOST $BACKUPDIR_SUFFIX $0 incr_$BAK_TIME $TMPINCRDIR 1 0 "$START_TIME"
+    insert_backup_status $FULL_HOST $BACKUPDIR_SUFFIX $0 incr_$BAK_TIME $TMPINCRDIR 1 0 "$START_TIME" $REMOTE_BACKUPHOST_IP
     echo "---------- ERROR OUTPUT from $INNOBACKUPEX ----------"
     exit 1
   else
-    insert_backup_status $FULL_HOST $BACKUPDIR_SUFFIX $0 incr_$BAK_TIME $TMPINCRDIR 1 1 "$START_TIME"
+    insert_backup_status $FULL_HOST $BACKUPDIR_SUFFIX $0 incr_$BAK_TIME $TMPINCRDIR 1 1 "$START_TIME" $REMOTE_BACKUPHOST_IP
     scp  $TMPFILE $USER_HOST:$TMPINCRDIR/incr_$BAK_TIME
   fi
 
@@ -129,11 +130,11 @@ else
 
   if [ -z "`tail -1 $TMPFILE | grep 'completed OK!'`" ] ; then
     echo "$INNOBACKUPEX failed:"; echo
-    insert_backup_status $FULL_HOST $BACKUPDIR_SUFFIX $0 incr_$BAK_TIME $TMPINCRDIR 0 0 "$START_TIME"
+    insert_backup_status $FULL_HOST $BACKUPDIR_SUFFIX $0 full_$BAK_TIME "$FULLBACKUPDIR/full_$BAK_TIME" 0 0 "$START_TIME" $REMOTE_BACKUPHOST_IP
     echo "---------- ERROR OUTPUT from $INNOBACKUPEX ----------"
     exit 1
   else
-    insert_backup_status $FULL_HOST $BACKUPDIR_SUFFIX $0 incr_$BAK_TIME $TMPINCRDIR 0 1 "$START_TIME"
+    insert_backup_status $FULL_HOST $BACKUPDIR_SUFFIX $0 full_$BAK_TIME "$FULLBACKUPDIR/full_$BAK_TIME" 0 1 "$START_TIME" $REMOTE_BACKUPHOST_IP
     scp  $TMPFILE $USER_HOST:$FULLBACKUPDIR/full_$BAK_TIME
   fi
 fi
