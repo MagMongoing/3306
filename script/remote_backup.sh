@@ -73,6 +73,16 @@ if ! `echo 'exit' | $MYSQL -s $USEROPTIONS` ; then
  error "HALTED: Supplied mysql username or password appears to be incorrect (not copied here for security, see script)."
 fi
 
+
+#############################################################################
+# Insert backup info to the specific table
+#############################################################################
+insert_backup_status()
+{
+    $MYSQL $STATOPTION archery -e 'insert into backup_stat(task_host,task,job_name,backup_name,remote_backup_dir,is_incr,is_sucess,started_at) values("'"$1"'","'"$2"'","'"$3"'","'"$4"'","'"$5"'","'"$6"'","'"$7"'","'"$8"'")'
+}
+
+
 # Some info output
 echo "-------------------------------------------------------"
 echo "----------start:`date +%Y%m%d_%H%M%S`------------------"
@@ -104,12 +114,11 @@ if [ "$LATEST_FULL" -a `expr $LATEST_FULL_CREATED_AT + $FULLBACKUPLIFE ` -ge $ST
 
   if [ -z "`tail -1 $TMPFILE | grep 'completed OK!'`" ] ; then
     echo "$INNOBACKUPEX failed:"; echo
-    $MYSQL $STATOPTION archery -e 'insert into backup_stat(task_host,task,job_name,backup_name,remote_backup_dir,is_incr,is_sucess,started_at) values("'"$FULL_HOST"'","'"$BACKUPDIR_SUFFIX"'","'"$0"'","'"incr_$BAK_TIME"'","'"$TMPINCRDIR"'",1,0,"'"$START_TIME"'")'
+    insert_backup_status $FULL_HOST $BACKUPDIR_SUFFIX $0 incr_$BAK_TIME $TMPINCRDIR 1 0 "$START_TIME"
     echo "---------- ERROR OUTPUT from $INNOBACKUPEX ----------"
-    scp  $TMPFILE $USER_HOST:$TMPINCRDIR/incr_$BAK_TIME
     exit 1
   else
-    $MYSQL $STATOPTION archery -e 'insert into backup_stat(task_host,task,job_name,backup_name,remote_backup_dir,is_incr,is_sucess,started_at) values("'"$FULL_HOST"'","'"$BACKUPDIR_SUFFIX"'","'"$0"'","'"incr_$BAK_TIME"'","'"$TMPINCRDIR"'",1,1,"'"$START_TIME"'")'
+    insert_backup_status $FULL_HOST $BACKUPDIR_SUFFIX $0 incr_$BAK_TIME $TMPINCRDIR 1 1 "$START_TIME"
     scp  $TMPFILE $USER_HOST:$TMPINCRDIR/incr_$BAK_TIME
   fi
 
@@ -120,12 +129,11 @@ else
 
   if [ -z "`tail -1 $TMPFILE | grep 'completed OK!'`" ] ; then
     echo "$INNOBACKUPEX failed:"; echo
-    $MYSQL $STATOPTION archery -e 'insert into backup_stat(task_host,task,job_name,backup_name,remote_backup_dir,is_incr,is_sucess,started_at) values("'"$FULL_HOST"'","'"$BACKUPDIR_SUFFIX"'","'"$0"'","'"full_$BAK_TIME"'","'"$FULLBACKUPDIR/full_$BAK_TIME"'",0,0,"'"$START_TIME"'")'
+    insert_backup_status $FULL_HOST $BACKUPDIR_SUFFIX $0 incr_$BAK_TIME $TMPINCRDIR 0 0 "$START_TIME"
     echo "---------- ERROR OUTPUT from $INNOBACKUPEX ----------"
-    scp  $TMPFILE $USER_HOST:$FULLBACKUPDIR/full_$BAK_TIME
     exit 1
   else
-    $MYSQL $STATOPTION archery -e 'insert into backup_stat(task_host,task,job_name,backup_name,remote_backup_dir,is_incr,is_sucess,started_at) values("'"$FULL_HOST"'","'"$BACKUPDIR_SUFFIX"'","'"$0"'","'"full_$BAK_TIME"'","'"$FULLBACKUPDIR/full_$BAK_TIME"'",0,1,"'"$START_TIME"'")'
+    insert_backup_status $FULL_HOST $BACKUPDIR_SUFFIX $0 incr_$BAK_TIME $TMPINCRDIR 0 1 "$START_TIME"
     scp  $TMPFILE $USER_HOST:$FULLBACKUPDIR/full_$BAK_TIME
   fi
 fi
