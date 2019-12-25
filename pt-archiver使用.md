@@ -40,3 +40,7 @@ LOAD DATA LOCAL INFILE ? INTO TABLE `ebike`.`op_move_bike_archive`CHARACTER SET 
 load data local 字符集有关的问题
 
 perl报错的问题
+
+# 参考
+
+[Summary of pt-archiver in Percona-Toolkit](https://programmer.group/summary-of-pt-archiver-in-percona-toolkit.html)

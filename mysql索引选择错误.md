@@ -59,3 +59,5 @@
 
 ## 参考
 [MySQL实战45讲 MySQL为什么会选择索引](https://time.geekbang.org/column/article/71173)
+
+[MySQL · 捉虫动态 · order by limit 造成优化器选择索引错误](http://mysql.taobao.org/monthly/2015/11/10/)
