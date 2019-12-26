@@ -111,7 +111,7 @@ if [ "$LATEST_FULL" -a `expr $LATEST_FULL_CREATED_AT + $FULLBACKUPLIFE ` -ge $ST
 
   echo "Running new incremental backup. incremental dir: incr_$BAK_TIME"
   $SSH_OPTION "mkdir -p $TMPINCRDIR/incr_$BAK_TIME"
-  $INNOBACKUPEXFULL --defaults-file=$MYCNF $USEROPTIONS --no-timestamp --compress --incremental --slave-info --stream=xbstream --parallel=$PARALLEL --history=$HISTORY_NAME --incremental-history-name=$HISTORY_NAME $BACKUPDIR 2> $TMPFILE |pv -q -L$PV |$SSH_OPTION "xbstream -x -C $TMPINCRDIR/incr_$BAK_TIME"
+  $INNOBACKUPEXFULL --defaults-file=$MYCNF $USEROPTIONS --no-timestamp --compress --throttle=30 --incremental --slave-info --stream=xbstream --parallel=$PARALLEL --history=$HISTORY_NAME --incremental-history-name=$HISTORY_NAME $BACKUPDIR 2> $TMPFILE |pv -q -L$PV |$SSH_OPTION "xbstream -x -C $TMPINCRDIR/incr_$BAK_TIME"
 
   if [ -z "`tail -1 $TMPFILE | grep 'completed OK!'`" ] ; then
     echo "$INNOBACKUPEX failed:"; echo
