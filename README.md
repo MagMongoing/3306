@@ -9,9 +9,9 @@ echo "192.168.0.100 backup" >>/etc/hosts
 # mysql server host: 192.168.0.50 , instance: dba
 30 1 * * * source /etc/profile && cd ~/script/mysql_backup && /bin/bash remote_backup.sh '/etc/my.cnf' dba >> ~/script/mysql_backup/backup.log
 ```
-- write bakcup info into a mysql manage server
+-  Bakcup info will be written into a mysql manage server
 ```
-# create table backup info
+# create table backup_stat
 CREATE TABLE `backup_stat` (
 `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
 `task` varchar(30) NOT NULL,
