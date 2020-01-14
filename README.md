@@ -1,5 +1,5 @@
 
-### Use xtrabackup backup mysql data to remote backup server:
+### Using xtrabackup backup mysql data to remote backup server:
 [mysql_backup script](./script/remote_backup.sh)
 
 - mysql server
