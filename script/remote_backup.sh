@@ -100,7 +100,7 @@ OLD_FULL=`$SSH_OPTION "find $FULLBACKUPDIR -mindepth 1 -maxdepth 1 -type d  | so
 LATEST_FULL_CREATED_AT=`$SSH_OPTION "stat -c %Y $FULLBACKUPDIR/$LATEST_FULL"`
 
 # set slave_parallel_worker=0
-$MYSQL $USEROPTIONS -e "set global slave_parallel_workers=0;stop slave sql_thread;start slave sql_thread;"
+#$MYSQL $USEROPTIONS -e "set global slave_parallel_workers=0;stop slave sql_thread;start slave sql_thread;"
 
 # Run an incremental backup if latest full is still valid. Otherwise, run a new full one.
 if [ "$LATEST_FULL" -a `expr $LATEST_FULL_CREATED_AT + $FULLBACKUPLIFE ` -ge $STARTED_AT ] ; then
@@ -140,7 +140,7 @@ else
 fi
 
 # set slave_parallel_worker=8
-$MYSQL $USEROPTIONS -e "set global slave_parallel_workers=8;stop slave sql_thread;start slave sql_thread;"
+#$MYSQL $USEROPTIONS -e "set global slave_parallel_workers=8;stop slave sql_thread;start slave sql_thread;"
 
 if [  "`tail -1 $TMPFILE | grep 'completed OK!'`" ] ; then
 THISBACKUP=`awk -- "/Backup created in directory/ { split( \\\$0, p, \"'\" ) ; print p[2] }" $TMPFILE`
