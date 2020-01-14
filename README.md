@@ -6,6 +6,8 @@
 ```
 # remote backup server: 192.168.0.100
 echo "192.168.0.100 backup" >>/etc/hosts
+# install
+yum install qpress pv -y
 # mysql server host: 192.168.0.50 , instance: dba
 30 1 * * * source /etc/profile && cd ~/script/mysql_backup && /bin/bash remote_backup.sh '/etc/my.cnf' dba >> ~/script/mysql_backup/backup.log
 ```
