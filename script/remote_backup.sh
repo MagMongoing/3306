@@ -6,8 +6,8 @@
 
 INNOBACKUPEX=innobackupex
 INNOBACKUPEXFULL=/usr/bin/$INNOBACKUPEX
-USEROPTIONS="--user= --password= --host= -P3306"
-STATOPTION="--user= --password= --host= -P3306"
+USEROPTIONS="--user= --password= --host= -P3306"  
+STATOPTION="--user= --password= --host= -P3306"   # write mysql backup info this instance
 MYCNF=$1
 MYSQL=/usr/bin/mysql
 MYSQLADMIN=/usr/bin/mysqladmin
