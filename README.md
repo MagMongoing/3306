@@ -34,3 +34,4 @@ KEY `idx_ctime` (`cost_time`),
 KEY `idx_ct` (`created_at`)
 ) ENGINE = InnoDB AUTO_INCREMENT = 303 DEFAULT CHARSET = utf8mb4;
 ```
+![backup info](back_info.jpeg)
