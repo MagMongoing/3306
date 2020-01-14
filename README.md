@@ -21,7 +21,7 @@ CREATE TABLE `backup_stat` (
 `cost_time` float(5, 2) DEFAULT NULL,
 `started_at` datetime NOT NULL,
 `task_host` varchar(100) NOT NULL,
-`storage_host` varchar(40) NOT NULL DEFAULT '10.9.89.119',
+`storage_host` varchar(40) NOT NULL DEFAULT '192.168.0.100',
 `job_name` varchar(50) NOT NULL,
 `remote_backup_dir` varchar(100) NOT NULL,
 `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
