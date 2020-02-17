@@ -115,11 +115,11 @@ if [ "$LATEST_FULL" -a `expr $LATEST_FULL_CREATED_AT + $FULLBACKUPLIFE ` -ge $ST
 
   if [ -z "`tail -1 $TMPFILE | grep 'completed OK!'`" ] ; then
     echo "$INNOBACKUPEX failed:"; echo
-    insert_backup_status $FULL_HOST $BACKUPDIR_SUFFIX $0 incr_$BAK_TIME $TMPINCRDIR 1 0 "$START_TIME" $REMOTE_BACKUPHOST_IP
+    insert_backup_status "$FULL_HOST" "$BACKUPDIR_SUFFIX" $0 incr_$BAK_TIME $TMPINCRDIR 1 0 "$START_TIME" "$REMOTE_BACKUPHOST_IP"
     echo "---------- ERROR OUTPUT from $INNOBACKUPEX ----------"
     exit 1
   else
-    insert_backup_status $FULL_HOST $BACKUPDIR_SUFFIX $0 incr_$BAK_TIME $TMPINCRDIR 1 1 "$START_TIME" $REMOTE_BACKUPHOST_IP
+    insert_backup_status "$FULL_HOST" "$BACKUPDIR_SUFFIX" $0 incr_$BAK_TIME $TMPINCRDIR 1 1 "$START_TIME" "$REMOTE_BACKUPHOST_IP"
     scp  $TMPFILE $USER_HOST:$TMPINCRDIR/incr_$BAK_TIME
   fi
 
@@ -130,11 +130,11 @@ else
 
   if [ -z "`tail -1 $TMPFILE | grep 'completed OK!'`" ] ; then
     echo "$INNOBACKUPEX failed:"; echo
-    insert_backup_status $FULL_HOST $BACKUPDIR_SUFFIX $0 full_$BAK_TIME "$FULLBACKUPDIR/full_$BAK_TIME" 0 0 "$START_TIME" $REMOTE_BACKUPHOST_IP
+    insert_backup_status "$FULL_HOST" "$BACKUPDIR_SUFFIX" $0 full_$BAK_TIME "$FULLBACKUPDIR/full_$BAK_TIME" 0 0 "$START_TIME" "$REMOTE_BACKUPHOST_IP"
     echo "---------- ERROR OUTPUT from $INNOBACKUPEX ----------"
     exit 1
   else
-    insert_backup_status $FULL_HOST $BACKUPDIR_SUFFIX $0 full_$BAK_TIME "$FULLBACKUPDIR/full_$BAK_TIME" 0 1 "$START_TIME" $REMOTE_BACKUPHOST_IP
+    insert_backup_status "$FULL_HOST" "$BACKUPDIR_SUFFIX" $0 full_$BAK_TIME "$FULLBACKUPDIR/full_$BAK_TIME" 0 1 "$START_TIME" "$REMOTE_BACKUPHOST_IP"
     scp  $TMPFILE $USER_HOST:$FULLBACKUPDIR/full_$BAK_TIME
   fi
 fi
@@ -151,8 +151,11 @@ echo
 fi
 
 ## Cleanup
-#echo "Cleanup. Keeping only $KEEP full backups and its incrementals."
-#AGE=$(($FULLBACKUPLIFE * $KEEP / 60))
+echo "Cleanup. Keeping only $KEEP full backups and its incrementals."
+AGE=$(($FULLBACKUPLIFE * $KEEP / 60))
+$SSH_OPTION "find $FULLBACKUPDIR -maxdepth 1 -type d -mmin +$AGE -execdir echo 'removing: '$FULLBACKUPDIR/{} \; \
+-execdir rm -rf $FULLBACKUPDIR/{} \; -execdir echo 'removing: '$INCRBACKUPDIR/{} \; \
+-execdir rm -rf $INCRBACKUPDIR/{} \; "
 #find $FULLBACKUPDIR -maxdepth 1 -type d -mmin +$AGE -execdir echo "removing: "$FULLBACKUPDIR/{} \; \
 #-execdir rm -rf $FULLBACKUPDIR/{} \; -execdir echo "removing: "$INCRBACKUPDIR/{} \; \
 #-execdir rm -rf $INCRBACKUPDIR/{} \;
