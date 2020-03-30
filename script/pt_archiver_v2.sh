@@ -5,7 +5,7 @@
 S_USER=archive
 S_PORT=3306
 S_HOST=$1
-S_PASS=sekAP7mimqwGpn4l
+S_PASS=admin
 S_DB=$2
 
 # dist
@@ -13,12 +13,12 @@ S_DB=$2
 D_USER=archive
 D_PORT=3306
 D_HOST=$3
-D_PASS=sekAP7mimqwGpn4l
+D_PASS=admin
 D_DB=$4
 
 # slave
 SLAVE_USER=archive
-SLAVE_PASS=sekAP7mimqwGpn4l
+SLAVE_PASS=admin
 SLAVE="--slave-user=$SLAVE_USER --slave-password=$SLAVE_PASS"
 
 # display error message and exit
